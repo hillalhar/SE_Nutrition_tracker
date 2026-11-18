@@ -79,3 +79,53 @@ function sumNutrients(entries = [], foodById = {}) {
   }, { ...ZERO })
 }
 
+// 90–110% dianggap pas
+function statusOf(value, target) {
+  if (!target) return 'pas'
+  const r = value / target
+  if (r < 0.9) return 'kurang'
+  if (r > 1.1) return 'lebih'
+  return 'pas'
+}
+
+// withName=false dipakai di tabel yang sudah menampilkan nama bahan
+function portionText(food, grams, withName = true) {
+  const n = Math.round((grams / food.portion.grams) * 2) / 2
+  const approx = n >= 0.5 ? ` (±${fmt(n, 1)} ${food.portion.unit})` : ''
+  const name = withName ? ` ${food.name.toLowerCase()}` : ''
+  return `${fmt(grams)} ${food.unit}${name}${approx}`
+}
+
+const round10 = (g) => Math.max(10, Math.round(g / 10) * 10)
+
+const isProtein = (f) => f.category === 'protein-hewani' || f.category === 'protein-nabati'
+
+// Saran makanan berikutnya berdasarkan sisa target hari ini
+function suggestNext(totals, targets, foods) {
+  const available = foods.filter((f) => f.available !== false)
+  const remKcal = targets.kcal - totals.kcal
+  const remProtein = targets.protein - totals.protein
+
+  if (totals.kcal > targets.kcal * 1.1) {
+    return { tone: 'lebih', text: `Kalori sudah lewat ${fmt(-remKcal)} kkal dari target. Kalau masih lapar, pilih sayur atau buah.` }
+  }
+  if (remProtein > 10) {
+    const best = available
+      .filter((f) => isProtein(f) && (f.protein * 4) / f.kcal >= 0.3)
+      .sort((a, b) => b.protein / b.price - a.protein / a.price)[0]
+    if (best) {
+      const grams = round10((Math.min(remProtein, 40) / best.protein) * 100)
+      return { tone: 'kurang', text: `Protein masih kurang ${fmt(remProtein)} g. Coba tambah ${portionText(best, grams)}.` }
+    }
+  }
+  if (remKcal > 150) {
+    const best = available
+      .filter((f) => f.category === 'karbohidrat')
+      .sort((a, b) => b.kcal / b.price - a.kcal / a.price)[0]
+    if (best) {
+      const grams = round10((Math.min(remKcal, 600) / best.kcal) * 100)
+      return { tone: 'kurang', text: `Masih ada ruang ${fmt(remKcal)} kkal. Contohnya ${portionText(best, grams)}.` }
+    }
+  }
+  return { tone: 'pas', text: 'Kebutuhan kalori dan protein hari ini sudah terpenuhi.' }
+}

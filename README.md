@@ -1,4 +1,4 @@
-# NutriTrack
+	# NutriTrack
 
 Aplikasi web untuk mencatat asupan gizi, menentukan kebutuhan nutrisi sesuai tujuan (bulking, cutting, diet, atau kebutuhan harian), mengecek stok bahan pangan beserta alternatifnya, dan menyusun rencana makan sesuai budget bulanan.
 
@@ -9,8 +9,8 @@ Project mata kuliah Software Engineering, Kelompok 5. Mendukung SDG 3: Good Heal
 | Tahap | Fitur | Dikerjakan | Status |
 |---|---|---|---|
 | 01 | Profil & target gizi | Anggota 1 | ✅ Selesai |
-| 02 | Catat makan | Anggota 2 | 🆕 Tahap ini |
-| 03 | Progres Hari ini | Anggota 3 | ⏳ Belum |
+| 02 | Catat makan | Anggota 2 | ✅ Selesai |
+| 03 | Progres Hari ini | Anggota 3 | 🆕 Tahap ini |
 | 04 | Stok & harga | Anggota 4 | ⏳ Belum |
 | 05 | Bahan pengganti | Anggota 5 | ⏳ Belum |
 | 06 | Rencana budget | Anggota 1 | ⏳ Belum |
@@ -24,15 +24,17 @@ Project mata kuliah Software Engineering, Kelompok 5. Mendukung SDG 3: Good Heal
 | 14 | Pengingat ke database | Anggota 4 | ⏳ Belum |
 | 15 | Versi final | Anggota 5 | ⏳ Belum |
 
-## Yang baru di tahap 02
+## Yang baru di tahap 03
 
-- Menu baru Catat makan: cari dan filter makanan, atur porsi, simpan catatan per tanggal.
-- Catatan tersimpan di localStorage, jadi tidak hilang saat halaman dimuat ulang.
+- Menu Hari ini sekarang menampilkan visual piring progres kalori dan makro dari makanan yang dicatat.
+- Status kurang/pas/lebih per makro, saran makanan berikutnya, dan daftar makanan hari ini.
+>>>>>>> hylmi
 
 ## Cara menjalankan
 
 Tidak perlu install apa pun. **Double-click `index.html`**, aplikasi langsung terbuka di browser.
-Untuk menjalankan unit test, buka `test.html` di browser. Hasilnya harus **"Semua 7 test lulus"**.
+Untuk menjalankan unit test, buka `test.html` di browser. Hasilnya harus **"Semua 9 test lulus"**.
+>>>>>>> hylmi
 
 ## Arsitektur
 

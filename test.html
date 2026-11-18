@@ -52,6 +52,7 @@
 
       // ---------- Data uji ----------
       const profile = { sex: 'male', age: 25, weight: 70, height: 175, activity: 'moderate', goal: 'maintenance' }
+      const allAvailable = FOODS.map((f) => ({ ...f, available: true }))
       const foodById = Object.fromEntries(FOODS.map((f) => [f.id, f]))
 
       describe('Perhitungan kebutuhan gizi', () => {
@@ -88,6 +89,17 @@
         it('menjumlahkan catatan makan', () => {
           const total = sumNutrients([{ foodId: 'nasi-putih', grams: 100 }, { foodId: 'telur', grams: 100 }], foodById)
           expect(total.kcal).toBeCloseTo(285)
+        })
+        it('status 90–110% dianggap pas', () => {
+          expect(statusOf(85, 100)).toBe('kurang')
+          expect(statusOf(100, 100)).toBe('pas')
+          expect(statusOf(115, 100)).toBe('lebih')
+        })
+        it('saran makanan menyarankan protein saat protein masih kurang', () => {
+          const targets = { kcal: 2500, protein: 120, carbs: 300, fat: 70 }
+          const s = suggestNext({ kcal: 800, protein: 30, carbs: 100, fat: 20 }, targets, allAvailable)
+          expect(s.tone).toBe('kurang')
+          expect(s.text).toContain('Protein masih kurang')
         })
       })
 
