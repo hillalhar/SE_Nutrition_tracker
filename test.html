@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NutriTrack — Unit test</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      .test-page { max-width: 820px; margin: 0 auto; padding: 2rem 1.25rem 4rem; display: grid; gap: 1.25rem; }
+      .summary-line { font-size: 1.25rem; font-weight: 800; }
+      .summary-line.ok { color: var(--daun); }
+      .summary-line.fail { color: var(--cabai); }
+      .test-row { display: flex; gap: 0.75rem; align-items: baseline; padding: 0.5rem 0; border-top: 1px solid var(--line); }
+      .test-row:first-child { border-top: 0; }
+      .test-row .mark { font-weight: 800; width: 1.2rem; flex: none; }
+      .test-row.pass .mark { color: var(--daun); }
+      .test-row.fail .mark { color: var(--cabai); }
+      .test-row small { display: block; color: var(--cabai); }
+    </style>
+  </head>
+  <body>
+    <main class="test-page">
+      <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>NutriTrack</span></div>
+      <h1>Unit test</h1>
+      <p class="muted">Menguji fungsi di js/logic/ (lapisan logika). Muat ulang halaman untuk menjalankan ulang.</p>
+      <p id="result" class="summary-line"></p>
+      <div id="suites"></div>
+    </main>
+
+    <script src="js/data/foods.js"></script>
+    <script src="js/utils/format.js"></script>
+    <script src="js/logic/nutrition.js"></script>
+    <script>
+      // ---------- Mini test runner ----------
+      const suites = []
+      let current
+      function describe(name, fn) { current = { name, tests: [] }; suites.push(current); fn() }
+      function it(name, fn) { current.tests.push({ name, fn }) }
+      function expect(actual) {
+        const fail = (msg) => { throw new Error(msg) }
+        return {
+          toBe: (v) => actual === v || fail(`diharapkan ${JSON.stringify(v)}, didapat ${JSON.stringify(actual)}`),
+          toBeCloseTo: (v, digits = 2) => Math.abs(actual - v) < Math.pow(10, -digits) / 2 || fail(`diharapkan ≈${v}, didapat ${actual}`),
+          toBeLessThan: (v) => actual < v || fail(`${actual} seharusnya < ${v}`),
+          toBeGreaterThan: (v) => actual > v || fail(`${actual} seharusnya > ${v}`),
+          toBeGreaterThanOrEqual: (v) => actual >= v || fail(`${actual} seharusnya >= ${v}`),
+          toContain: (v) => actual.includes(v) || fail(`${JSON.stringify(actual)} tidak berisi ${JSON.stringify(v)}`),
+          toHaveLength: (n) => actual.length === n || fail(`panjang ${actual.length}, diharapkan ${n}`),
+          notToBe: (v) => actual !== v || fail(`tidak boleh ${JSON.stringify(v)}`),
+        }
+      }
+
+      // ---------- Data uji ----------
+      const profile = { sex: 'male', age: 25, weight: 70, height: 175, activity: 'moderate', goal: 'maintenance' }
+      const allAvailable = FOODS.map((f) => ({ ...f, available: true }))
+      const foodById = Object.fromEntries(FOODS.map((f) => [f.id, f]))
+
+      describe('Perhitungan kebutuhan gizi', () => {
+        it('BMR laki-laki sesuai rumus Mifflin-St Jeor', () => {
+          expect(calcBMR(profile)).toBeCloseTo(1673.75)
+        })
+        it('BMR perempuan lebih rendah 166 kkal dari laki-laki dengan data sama', () => {
+          expect(calcBMR(profile) - calcBMR({ ...profile, sex: 'female' })).toBeCloseTo(166)
+        })
+        it('target cutting < maintenance < bulking', () => {
+          const cut = calcTargets({ ...profile, goal: 'cutting' }).kcal
+          const main = calcTargets(profile).kcal
+          const bulk = calcTargets({ ...profile, goal: 'bulking' }).kcal
+          expect(cut).toBeLessThan(main)
+          expect(main).toBeLessThan(bulk)
+        })
+        it('kalori tidak turun di bawah batas aman 1.200 kkal', () => {
+          const t = calcTargets({ sex: 'female', age: 60, weight: 40, height: 145, activity: 'sedentary', goal: 'cutting' })
+          expect(t.kcal).toBeGreaterThanOrEqual(1200)
+        })
+        it('total makronutrien mendekati target kalori', () => {
+          const t = calcTargets(profile)
+          expect(Math.abs(t.protein * 4 + t.carbs * 4 + t.fat * 9 - t.kcal)).toBeLessThan(15)
+        })
+      })
+
+      describe('Nilai gizi makanan', () => {
+        it('menskalakan gizi sesuai gram (200 g telur)', () => {
+          const n = nutrientsFor(FOODS.find((f) => f.id === 'telur'), 200)
+          expect(n.kcal).toBeCloseTo(310)
+          expect(n.protein).toBeCloseTo(25.2)
+          expect(n.cost).toBeCloseTo(5600)
+        })
+        it('menjumlahkan catatan makan', () => {
+          const total = sumNutrients([{ foodId: 'nasi-putih', grams: 100 }, { foodId: 'telur', grams: 100 }], foodById)
+          expect(total.kcal).toBeCloseTo(285)
+        })
+        it('status 90–110% dianggap pas', () => {
+          expect(statusOf(85, 100)).toBe('kurang')
+          expect(statusOf(100, 100)).toBe('pas')
+          expect(statusOf(115, 100)).toBe('lebih')
+        })
+        it('saran makanan menyarankan protein saat protein masih kurang', () => {
+          const targets = { kcal: 2500, protein: 120, carbs: 300, fat: 70 }
+          const s = suggestNext({ kcal: 800, protein: 30, carbs: 100, fat: 20 }, targets, allAvailable)
+          expect(s.tone).toBe('kurang')
+          expect(s.text).toContain('Protein masih kurang')
+        })
+      })
+
+      // ---------- Jalankan & tampilkan ----------
+      let passed = 0, failed = 0
+      document.getElementById('suites').innerHTML = suites.map((suite) => {
+        const rows = suite.tests.map((t) => {
+          try {
+            t.fn(); passed++
+            return `<li class="test-row pass"><span class="mark">✓</span><span>${t.name}</span></li>`
+          } catch (err) {
+            failed++
+            return `<li class="test-row fail"><span class="mark">✗</span><span>${t.name}<small>${err.message}</small></span></li>`
+          }
+        }).join('')
+        return `<section class="panel"><h2>${suite.name}</h2><ul class="rows">${rows}</ul></section>`
+      }).join('')
+      const result = document.getElementById('result')
+      result.textContent = failed ? `${failed} test gagal, ${passed} lulus` : `Semua ${passed} test lulus`
+      result.className = 'summary-line ' + (failed ? 'fail' : 'ok')
+    </script>
+  </body>
+</html>
