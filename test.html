@@ -52,6 +52,7 @@
 
       // ---------- Data uji ----------
       const profile = { sex: 'male', age: 25, weight: 70, height: 175, activity: 'moderate', goal: 'maintenance' }
+      const foodById = Object.fromEntries(FOODS.map((f) => [f.id, f]))
 
       describe('Perhitungan kebutuhan gizi', () => {
         it('BMR laki-laki sesuai rumus Mifflin-St Jeor', () => {
@@ -74,6 +75,19 @@
         it('total makronutrien mendekati target kalori', () => {
           const t = calcTargets(profile)
           expect(Math.abs(t.protein * 4 + t.carbs * 4 + t.fat * 9 - t.kcal)).toBeLessThan(15)
+        })
+      })
+
+      describe('Nilai gizi makanan', () => {
+        it('menskalakan gizi sesuai gram (200 g telur)', () => {
+          const n = nutrientsFor(FOODS.find((f) => f.id === 'telur'), 200)
+          expect(n.kcal).toBeCloseTo(310)
+          expect(n.protein).toBeCloseTo(25.2)
+          expect(n.cost).toBeCloseTo(5600)
+        })
+        it('menjumlahkan catatan makan', () => {
+          const total = sumNutrients([{ foodId: 'nasi-putih', grams: 100 }, { foodId: 'telur', grams: 100 }], foodById)
+          expect(total.kcal).toBeCloseTo(285)
         })
       })
 

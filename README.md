@@ -4,37 +4,71 @@ Aplikasi web untuk mencatat asupan gizi, menentukan kebutuhan nutrisi sesuai tuj
 
 Project mata kuliah Software Engineering, Kelompok 5. Mendukung SDG 3: Good Health and Well-Being.
 
-## Status pengembangan (versi React)
+## Status pengembangan
 
-| Tahap | Fitur | Isi | Status |
+| Tahap | Fitur | Dikerjakan | Status |
 |---|---|---|---|
-| 01 | Kerangka aplikasi | Struktur proyek React + Vite, navigasi 6 menu, tampilan dasar | Selesai |
-| 02 | Profil & target gizi | Onboarding profil, hitung BMR/TDEE (Mifflin-St Jeor) dan target makro sesuai tujuan | Selesai |
-| 03 | Catat makan | Database 35 bahan pangan, pencarian, filter kategori, porsi, catatan per tanggal | Belum |
-| 04 | Halaman Hari ini | Visual piring progres kalori & makro, status kurang/pas/lebih, saran makanan | Belum |
-| 05 | Stok & substitusi | Tandai bahan kosong, bahan pengganti dengan gizi mirip, ubah harga bahan | Belum |
-| 06 | Rencana budget | Menu 7 hari + daftar belanja sesuai budget bulanan (mode normal/hemat/minimal) | Belum |
-| 07 | Ringkasan mingguan | Grafik kalori 7 hari, rata-rata gizi, hari paling konsisten, pengeluaran bulan ini | Belum |
-| 08 | Pengingat & notifikasi | Pengingat jam makan, notifikasi target tercapai / kalori berlebih, ringkasan harian | Belum |
+| 01 | Profil & target gizi | Anggota 1 | ✅ Selesai |
+| 02 | Catat makan | Anggota 2 | 🆕 Tahap ini |
+| 03 | Progres Hari ini | Anggota 3 | ⏳ Belum |
+| 04 | Stok & harga | Anggota 4 | ⏳ Belum |
+| 05 | Bahan pengganti | Anggota 5 | ⏳ Belum |
+| 06 | Rencana budget | Anggota 1 | ⏳ Belum |
+| 07 | Ringkasan mingguan | Anggota 2 | ⏳ Belum |
+| 08 | Pengingat & notifikasi | Anggota 3 | ⏳ Belum |
+| 09 | Koneksi Supabase | Anggota 4 | ⏳ Belum |
+| 10 | Login & daftar akun | Anggota 5 | ⏳ Belum |
+| 11 | Profil ke database | Anggota 1 | ⏳ Belum |
+| 12 | Catatan makan ke database | Anggota 2 | ⏳ Belum |
+| 13 | Stok, harga & budget ke database | Anggota 3 | ⏳ Belum |
+| 14 | Pengingat ke database | Anggota 4 | ⏳ Belum |
+| 15 | Versi final | Anggota 5 | ⏳ Belum |
+
+## Yang baru di tahap 02
+
+- Menu baru Catat makan: cari dan filter makanan, atur porsi, simpan catatan per tanggal.
+- Catatan tersimpan di localStorage, jadi tidak hilang saat halaman dimuat ulang.
 
 ## Cara menjalankan
 
-Butuh [Node.js](https://nodejs.org) versi 18 ke atas.
+Tidak perlu install apa pun. **Double-click `index.html`**, aplikasi langsung terbuka di browser.
+Untuk menjalankan unit test, buka `test.html` di browser. Hasilnya harus **"Semua 7 test lulus"**.
 
-```bash
-npm install      # install dependency (sekali saja)
-npm run dev      # jalankan di http://localhost:5173
-npm test         # jalankan unit test
+## Arsitektur
+
+Aplikasi memakai **layered architecture** di dalam browser. Setiap lapisan hanya memanggil lapisan di bawahnya:
+
+1. **Tampilan**: `css/`, fungsi `view...()` di `js/features/`, dan `render()` di `js/core/app.js`.
+2. **Event handler**: `App.on(...)` di setiap file `js/features/`, diteruskan oleh `dispatch()` di `js/core/app.js`.
+3. **Logika**: `js/logic/`. Murni perhitungan, tidak menyentuh HTML maupun penyimpanan, jadi bisa diuji di `test.html`.
+4. **Data**: `js/data/foods.js` dan `js/core/state.js` (satu-satunya yang membaca/menulis localStorage).
+
+## Struktur file
+
 ```
-
-Testing: 5 unit test perhitungan gizi.
-
-## Tech stack
-
-- React 18 + Vite 5
-- CSS murni
-- Vitest untuk unit test
-- Data disimpan di `localStorage` browser
+nutritrack/
+├── css/
+│   └── style.css
+├── js/
+│   ├── core/
+│   │   ├── app.js
+│   │   ├── helpers.js
+│   │   ├── registry.js
+│   │   └── state.js
+│   ├── data/
+│   │   └── foods.js
+│   ├── features/
+│   │   ├── dashboard.js
+│   │   ├── foodlog.js
+│   │   └── profile.js
+│   ├── logic/
+│   │   └── nutrition.js
+│   └── utils/
+│       └── format.js
+├── README.md
+├── index.html
+└── test.html
+```
 
 ## Disclaimer
 

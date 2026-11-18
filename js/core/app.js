@@ -68,6 +68,10 @@ function render() {
       try { if (focus.start !== null) el.setSelectionRange(focus.start, focus.end) } catch { /* input number */ }
     }
   }
+  if (ui.scrollToForm) {
+    ui.scrollToForm = false
+    document.getElementById('entry-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 }
 
 function safeSelection(el, prop) {

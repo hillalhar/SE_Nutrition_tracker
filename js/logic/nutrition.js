@@ -21,6 +21,8 @@ const GOALS = {
   maintenance: { label: 'Kebutuhan harian', desc: 'Menjaga berat badan dan memenuhi gizi tubuh', kcalFactor: 1.0, proteinPerKg: 1.2, fatPct: 0.3 },
 }
 
+const MEALS = ['Sarapan', 'Makan siang', 'Makan malam', 'Camilan']
+
 // Batas bawah kalori harian supaya rekomendasi tetap aman
 const MIN_KCAL = { male: 1500, female: 1200 }
 
@@ -44,5 +46,36 @@ function calcTargets(profile) {
   const fat = Math.round((kcal * goal.fatPct) / 9)
   const carbs = Math.max(0, Math.round((kcal - protein * 4 - fat * 9) / 4))
   return { bmr: Math.round(bmr), tdee: Math.round(tdee), kcal, protein, fat, carbs }
+}
+
+function nutrientsFor(food, grams) {
+  const k = (Number(grams) || 0) / 100
+  return {
+    kcal: food.kcal * k,
+    protein: food.protein * k,
+    carbs: food.carbs * k,
+    fat: food.fat * k,
+    cost: food.price * k,
+  }
+}
+
+const ZERO = { kcal: 0, protein: 0, carbs: 0, fat: 0, cost: 0 }
+
+function addNutrients(a, b) {
+  return {
+    kcal: a.kcal + b.kcal,
+    protein: a.protein + b.protein,
+    carbs: a.carbs + b.carbs,
+    fat: a.fat + b.fat,
+    cost: a.cost + b.cost,
+  }
+}
+
+// entries: catatan makan [{ foodId, grams }]
+function sumNutrients(entries = [], foodById = {}) {
+  return entries.reduce((acc, e) => {
+    const food = foodById[e.foodId]
+    return food ? addNutrients(acc, nutrientsFor(food, e.grams)) : acc
+  }, { ...ZERO })
 }
 
