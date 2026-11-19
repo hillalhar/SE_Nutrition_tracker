@@ -99,6 +99,7 @@ function viewLog(ctx) {
           <li>
             <button class="row row-btn${L.selectedId === f.id ? ' is-selected' : ''}" data-action="log-choose" data-id="${f.id}">
               <span class="row-main">${f.name}<small>${fmt(f.kcal)} kkal, ${fmt(f.protein, 1)} g protein per 100 ${f.unit}</small></span>
+              ${f.available ? '' : '<span class="status status-lebih">Kosong</span>'}
             </button>
           </li>`).join('')}
         ${filtered.length ? '' : '<li class="empty">Tidak ada makanan dengan nama itu. Coba kata lain atau pilih kategori Semua.</li>'}

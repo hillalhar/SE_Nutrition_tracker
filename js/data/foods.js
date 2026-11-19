@@ -76,3 +76,5 @@ const FOODS = [
   f('alpukat', 'Alpukat', 'lemak', 160, 2, 8.5, 14.7, 3000, { grams: 100, unit: 'setengah buah' }),
 ]
 
+// Stok awal. false = kosong. Daging sapi dibuat kosong sebagai contoh fitur substitusi.
+const DEFAULT_STOCK = { 'daging-sapi': false }

@@ -9,9 +9,14 @@
 const KEYS = {
   profile: 'nt_profile',
   logs: 'nt_logs',
+  stock: 'nt_stock',
+  prices: 'nt_prices',
 }
 
 const DEFAULT_PROFILE = { name: '', sex: 'male', age: 20, weight: 65, height: 170, activity: 'moderate', goal: 'maintenance' }
+
+// Harga awal dari database bahan, dipakai untuk tombol "Reset" harga
+const BASE_PRICE = Object.fromEntries(FOODS.map((f) => [f.id, f.price]))
 
 function load(key, fallback) {
   try {
@@ -43,6 +48,8 @@ function clearLocalData() {
 const state = {
   profile: load(KEYS.profile, null),
   logs: load(KEYS.logs, {}),
+  stock: load(KEYS.stock, DEFAULT_STOCK),
+  prices: load(KEYS.prices, {}),
 }
 
 // State tampilan (tidak disimpan)
@@ -51,6 +58,7 @@ const ui = {
   editingProfile: false,
   form: { ...(state.profile || DEFAULT_PROFILE) },
   log: { date: todayKey(), query: '', category: 'semua', selectedId: null, grams: 100, meal: defaultMeal() },
+  stockUi: { query: '', onlyEmpty: false },
   toasts: [],
   scrollToForm: false,
 }
@@ -73,7 +81,7 @@ function defaultMeal() {
 
 // Database bahan digabung dengan stok & harga yang diubah user
 function getFoods() {
-  return FOODS.map((f) => ({ ...f, available: true }))
+  return FOODS.map((f) => ({ ...f, price: state.prices[f.id] ?? f.price, available: state.stock[f.id] !== false }))
 }
 
 // Data yang dibutuhkan semua halaman, dihitung sekali setiap render

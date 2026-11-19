@@ -1,4 +1,4 @@
-	# NutriTrack
+# NutriTrack
 
 Aplikasi web untuk mencatat asupan gizi, menentukan kebutuhan nutrisi sesuai tujuan (bulking, cutting, diet, atau kebutuhan harian), mengecek stok bahan pangan beserta alternatifnya, dan menyusun rencana makan sesuai budget bulanan.
 
@@ -10,8 +10,8 @@ Project mata kuliah Software Engineering, Kelompok 5. Mendukung SDG 3: Good Heal
 |---|---|---|---|
 | 01 | Profil & target gizi | Anggota 1 | ✅ Selesai |
 | 02 | Catat makan | Anggota 2 | ✅ Selesai |
-| 03 | Progres Hari ini | Anggota 3 | 🆕 Tahap ini |
-| 04 | Stok & harga | Anggota 4 | ⏳ Belum |
+| 03 | Progres Hari ini | Anggota 3 | ✅ Selesai |
+| 04 | Stok & harga | Anggota 4 | 🆕 Tahap ini |
 | 05 | Bahan pengganti | Anggota 5 | ⏳ Belum |
 | 06 | Rencana budget | Anggota 1 | ⏳ Belum |
 | 07 | Ringkasan mingguan | Anggota 2 | ⏳ Belum |
@@ -24,17 +24,15 @@ Project mata kuliah Software Engineering, Kelompok 5. Mendukung SDG 3: Good Heal
 | 14 | Pengingat ke database | Anggota 4 | ⏳ Belum |
 | 15 | Versi final | Anggota 5 | ⏳ Belum |
 
-## Yang baru di tahap 03
+## Yang baru di tahap 04
 
-- Menu Hari ini sekarang menampilkan visual piring progres kalori dan makro dari makanan yang dicatat.
-- Status kurang/pas/lebih per makro, saran makanan berikutnya, dan daftar makanan hari ini.
->>>>>>> hylmi
+- Menu baru Stok & harga: tandai bahan yang kosong dan ubah harga per 100 g.
+- Bahan kosong diberi label "Kosong" di daftar Catat makan.
 
 ## Cara menjalankan
 
 Tidak perlu install apa pun. **Double-click `index.html`**, aplikasi langsung terbuka di browser.
 Untuk menjalankan unit test, buka `test.html` di browser. Hasilnya harus **"Semua 9 test lulus"**.
->>>>>>> hylmi
 
 ## Arsitektur
 
@@ -62,7 +60,8 @@ nutritrack/
 │   ├── features/
 │   │   ├── dashboard.js
 │   │   ├── foodlog.js
-│   │   └── profile.js
+│   │   ├── profile.js
+│   │   └── stock.js
 │   ├── logic/
 │   │   └── nutrition.js
 │   └── utils/
